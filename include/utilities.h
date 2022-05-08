@@ -1,4 +1,13 @@
+#pragma once
 #include <Wire.h>
+
+// #define SIM800L_IP5306_VERSION_20190610
+// #define SIM800L_AXP192_VERSION_20200327
+// #define SIM800C_AXP192_VERSION_20200609
+#define SIM800L_IP5306_VERSION_20200811
+
+#define SerialMon Serial
+#define SerialAT  Serial1
 
 #if defined(SIM800L_IP5306_VERSION_20190610)
 
@@ -17,20 +26,20 @@
 #define IP5306_ADDR          0x75
 #define IP5306_REG_SYS_CTL0  0x00
 
-// setPowerBoostKeepOn
-bool setupPMU()
-{
-    bool en = true;
-    Wire.begin(I2C_SDA, I2C_SCL);
-    Wire.beginTransmission(IP5306_ADDR);
-    Wire.write(IP5306_REG_SYS_CTL0);
-    if (en) {
-        Wire.write(0x37); // Set bit1: 1 enable 0 disable boost keep on
-    } else {
-        Wire.write(0x35); // 0x37 is default reg value
-    }
-    return Wire.endTransmission() == 0;
-}
+// // setPowerBoostKeepOn
+// bool setupPMU()
+// {
+//     bool en = true;
+//     Wire.begin(I2C_SDA, I2C_SCL);
+//     Wire.beginTransmission(IP5306_ADDR);
+//     Wire.write(IP5306_REG_SYS_CTL0);
+//     if (en) {
+//         Wire.write(0x37); // Set bit1: 1 enable 0 disable boost keep on
+//     } else {
+//         Wire.write(0x35); // 0x37 is default reg value
+//     }
+//     return Wire.endTransmission() == 0;
+// }
 
 
 #elif defined(SIM800L_AXP192_VERSION_20200327)
@@ -87,19 +96,19 @@ bool setupPMU()
 #define IP5306_REG_SYS_CTL0  0x00
 
 // setPowerBoostKeepOn
-bool setupPMU()
-{
-    bool en = true;
-    Wire.begin(I2C_SDA, I2C_SCL);
-    Wire.beginTransmission(IP5306_ADDR);
-    Wire.write(IP5306_REG_SYS_CTL0);
-    if (en) {
-        Wire.write(0x37); // Set bit1: 1 enable 0 disable boost keep on
-    } else {
-        Wire.write(0x35); // 0x37 is default reg value
-    }
-    return Wire.endTransmission() == 0;
-}
+// bool setupPMU()
+// {
+//     bool en = true;
+//     Wire.begin(I2C_SDA, I2C_SCL);
+//     Wire.beginTransmission(IP5306_ADDR);
+//     Wire.write(IP5306_REG_SYS_CTL0);
+//     if (en) {
+//         Wire.write(0x37); // Set bit1: 1 enable 0 disable boost keep on
+//     } else {
+//         Wire.write(0x35); // 0x37 is default reg value
+//     }
+//     return Wire.endTransmission() == 0;
+// }
 
 #else
 
@@ -109,49 +118,49 @@ bool setupPMU()
 
 
 #if defined(SIM800L_AXP192_VERSION_20200327) || defined(SIM800C_AXP192_VERSION_20200609)
-#include <axp20x.h>         //https://github.com/lewisxhe/AXP202X_Library
+// #include <axp20x.h>         //https://github.com/lewisxhe/AXP202X_Library
 
-AXP20X_Class axp;
+// AXP20X_Class axp;
 
-bool setupPMU()
-{
-// For more information about the use of AXP192, please refer to AXP202X_Library https://github.com/lewisxhe/AXP202X_Library
-    Wire.begin(I2C_SDA, I2C_SCL);
-    int ret = axp.begin(Wire, AXP192_SLAVE_ADDRESS);
+// bool setupPMU()
+// {
+// // For more information about the use of AXP192, please refer to AXP202X_Library https://github.com/lewisxhe/AXP202X_Library
+//     Wire.begin(I2C_SDA, I2C_SCL);
+//     int ret = axp.begin(Wire, AXP192_SLAVE_ADDRESS);
 
-    if (ret == AXP_FAIL) {
-        Serial.println("AXP Power begin failed");
-        return false;
-    }
+//     if (ret == AXP_FAIL) {
+//         Serial.println("AXP Power begin failed");
+//         return false;
+//     }
 
-    //! Turn off unused power
-    axp.setPowerOutPut(AXP192_DCDC1, AXP202_OFF);
-    axp.setPowerOutPut(AXP192_LDO2, AXP202_OFF);
-    axp.setPowerOutPut(AXP192_LDO3, AXP202_OFF);
-    axp.setPowerOutPut(AXP192_DCDC2, AXP202_OFF);
-    axp.setPowerOutPut(AXP192_EXTEN, AXP202_OFF);
+//     //! Turn off unused power
+//     axp.setPowerOutPut(AXP192_DCDC1, AXP202_OFF);
+//     axp.setPowerOutPut(AXP192_LDO2, AXP202_OFF);
+//     axp.setPowerOutPut(AXP192_LDO3, AXP202_OFF);
+//     axp.setPowerOutPut(AXP192_DCDC2, AXP202_OFF);
+//     axp.setPowerOutPut(AXP192_EXTEN, AXP202_OFF);
 
-    //! Do not turn off DC3, it is powered by esp32
-    // axp.setPowerOutPut(AXP192_DCDC3, AXP202_ON);
+//     //! Do not turn off DC3, it is powered by esp32
+//     // axp.setPowerOutPut(AXP192_DCDC3, AXP202_ON);
 
-    // Set the charging indicator to turn off
-    // Turn it off to save current consumption
-    // axp.setChgLEDMode(AXP20X_LED_OFF);
+//     // Set the charging indicator to turn off
+//     // Turn it off to save current consumption
+//     // axp.setChgLEDMode(AXP20X_LED_OFF);
 
-    // Set the charging indicator to flash once per second
-    // axp.setChgLEDMode(AXP20X_LED_BLINK_1HZ);
+//     // Set the charging indicator to flash once per second
+//     // axp.setChgLEDMode(AXP20X_LED_BLINK_1HZ);
 
 
-    //! Use axp192 adc get voltage info
-    axp.adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
+//     //! Use axp192 adc get voltage info
+//     axp.adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
 
-    float vbus_v = axp.getVbusVoltage();
-    float vbus_c = axp.getVbusCurrent();
-    float batt_v = axp.getBattVoltage();
-    // axp.getBattPercentage();   // axp192 is not support percentage
-    Serial.printf("VBUS:%.2f mV %.2f mA ,BATTERY: %.2f\n", vbus_v, vbus_c, batt_v);
+//     float vbus_v = axp.getVbusVoltage();
+//     float vbus_c = axp.getVbusCurrent();
+//     float batt_v = axp.getBattVoltage();
+//     // axp.getBattPercentage();   // axp192 is not support percentage
+//     Serial.printf("VBUS:%.2f mV %.2f mA ,BATTERY: %.2f\n", vbus_v, vbus_c, batt_v);
 
-    return true;
-}
+//     return true;
+// }
 
 #endif
